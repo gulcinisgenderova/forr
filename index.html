@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Description to JSON Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #F4F4F9;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .company-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .maze {
+            color: #FF0800; /* Custom Red */
+        }
+        .developer-info {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .project-info {
+            margin-bottom: 20px;
+        }
+        .project-info p {
+            margin: 5px 0;
+            color: #555;
+        }
+        .divider {
+            border-top: 2px solid #ddd;
+            margin: 20px 0;
+        }
+        label, input, button {
+            display: block;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+        .json-output {
+            background-color: #333;
+            color: #F4F4F9;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .add-button-red {
+            background-color: #B32113; /* Custom Red */
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            width: auto;
+            margin-top: 5px;
+        }
+        .add-button-red:hover {
+            background-color: #6D0C03; /* Slightly darker red */
+        }
+        .convert-button {
+            background-color: #B32113; /* Custom Red */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .convert-button:hover {
+            background-color: #6D0C03; /* Slightly darker red */
+        }
+        .clear-button {
+            background-color: #E0E0E0;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .clear-button:hover {
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="company-name"><span class="maze">Kapital</span> Bank</div>
+        <div class="developer-info">Developed by rasid.teymurlu@kapitalbank.az</div>
+    </div>
+    <div class="project-info">
+        <p><strong>Tribe:</strong> Enterprise Solutions</p>
+        <p><strong>Squad:</strong> KB Users</p>
+        <p><strong>Project Purpose:</strong> Making the project owner's life easier, even if it's not their job!</p>
+        <p><strong>General Purpose:</strong> Simplify internal workflows, foster better teamwork, and lessen reliance on external factors.</p>
+        <p><strong>Expiration:</strong> Until the Vendor Company provides the API :grin:</p>
+    </div>
+    <div class="divider"></div>
+    <h2>Job Description to JSON Converter</h2>
+    <label for="title">Job Title:</label>
+    <input type="text" id="title" placeholder="e.g., Senior Data Engineer">
+    <label for="summary">Summary:</label>
+    <input type="text" id="summary" placeholder="Summary about the role">
+    <label>Responsibilities:</label>
+    <div id="responsibilities-container">
+        <input type="text" placeholder="Enter a responsibility">
+    </div>
+    <button class="add-button-red" onclick="addField('responsibilities-container')">+ Add Responsibility</button>
+    <label>Requirements:</label>
+    <div id="requirements-container">
+        <input type="text" placeholder="Enter a requirement">
+    </div>
+    <button class="add-button-red" onclick="addField('requirements-container')">+ Add Requirement</button>
+    <label>Advantages:</label>
+    <div id="advantages-container">
+        <input type="text" placeholder="Enter an advantage">
+    </div>
+    <button class="add-button-red" onclick="addField('advantages-container')">+ Add Advantage</button>
+    <button class="convert-button" onclick="convertToJson()">Convert to JSON</button>
+    <button class="clear-button" onclick="clearFields()">Clear All</button>
+    <h3>JSON Output:</h3>
+    <pre class="json-output" id="json-output"></pre>
+</div>
+
+<script>
+    function detectAzerbaijani(text) {
+        const azerbaijaniCharacters = /[ƏəĞğİıÖöŞşÜüÇç]/;
+        return azerbaijaniCharacters.test(text);
+    }
+
+    function addField(containerId) {
+    const container = document.getElementById(containerId);
+    const input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = `Enter another ${containerId.split('-')[0].slice(0, -1)}`;
+    container.appendChild(input);
+}
+
+    function convertToJson() {
+        const title = document.getElementById('title').value;
+        const summary = document.getElementById('summary').value;
+        const responsibilities = Array.from(document.getElementById('responsibilities-container').getElementsByTagName('input')).map(input => input.value).filter(value => value.trim() !== '');
+        const requirements = Array.from(document.getElementById('requirements-container').getElementsByTagName('input')).map(input => input.value).filter(value => value.trim() !== '');
+        const advantages = Array.from(document.getElementById('advantages-container').getElementsByTagName('input')).map(input => input.value).filter(value => value.trim() !== '');
+        
+        if (!title || !summary || responsibilities.length === 0 || requirements.length === 0 || advantages.length === 0) {
+            alert("Please fill in all fields before converting!");
+            return;
+        }
+
+        const isAzerbaijani = detectAzerbaijani(title + summary + responsibilities.join(' ') + requirements.join(' ') + advantages.join(' '));
+        
+        const labels = isAzerbaijani
+            ? {
+                summaryLabel: "Rol haqqında",
+                responsibilitiesLabel: "Öhdəliklər",
+                requirementsLabel: "Tələblər",
+                advantagesLabel: "Bizimlə işləməyin üstünlükləri"
+              }
+            : {
+                summaryLabel: "About the role",
+                responsibilitiesLabel: "Responsibilities",
+                requirementsLabel: "Requirements",
+                advantagesLabel: "Advantages of working with us"
+              };
+
+        const jsonResult = {
+            "title": title,
+            "summary": {
+                "label": labels.summaryLabel,
+                "value": summary
+            },
+            "responsibilities": {
+                "label": labels.responsibilitiesLabel,
+                "value": responsibilities
+            },
+            "requirements": {
+                "label": labels.requirementsLabel,
+                "value": requirements
+            },
+            "advantages": {
+                "label": labels.advantagesLabel,
+                "value": advantages
+            }
+        };
+
+        document.getElementById('json-output').textContent = JSON.stringify(jsonResult, null, 2);
+    }
+
+    function clearFields() {
+        document.getElementById('title').value = '';
+        document.getElementById('summary').value = '';
+        document.getElementById('responsibilities-container').innerHTML = '<input type="text" placeholder="Enter a responsibility">';
+        document.getElementById('requirements-container').innerHTML = '<input type="text" placeholder="Enter a requirement">';
+        document.getElementById('advantages-container').innerHTML = '<input type="text" placeholder="Enter an advantage">';
+        document.getElementById('json-output').textContent = '';
+    }
+</script>
+</body>
+</html>
